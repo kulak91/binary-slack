@@ -2,7 +2,7 @@
 
 // Dependency
 // for local tests:
-require('dotenv').config();
+// require('dotenv').config();
 const pm2 = require('pm2');
 const pmx = require('pmx').initModule();
 const app = require('./slack-receiver');

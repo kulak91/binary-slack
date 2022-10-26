@@ -1,6 +1,6 @@
 const { App } = require('@slack/bolt');
 const fs = require('fs/promises');
-require('dotenv').config();
+// require('dotenv').config();
 const { list, restart, describe } = require('./pm2-helper');
 const { timeSince } = require('./utils');
 const path = require('path');
