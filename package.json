@@ -1,0 +1,32 @@
+{
+  "name": "binary-slack",
+  "version": "1.0.0",
+  "description": "A PM2 module to emit events to Slack and more",
+  "apps": [
+    {
+      "script": "index.js",
+      "merge_logs": true,
+      "max_memory_restart": "200M"
+    }
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kulak91/binary-slack"
+  },
+  "keywords": [
+    "pm2",
+    "slack",
+    "binary"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@slack/bolt": "^3.12.1",
+    "dotenv": "^16.0.3",
+    "node-fetch": "2.6.7",
+    "pm2": "^0.15.10",
+    "pmx": "^0.5.5"
+  }
+}
