@@ -16,8 +16,6 @@ const { parseIncommingLog, parseProcessName } = require('./utils');
  * @property {boolean} exception
  */
 
-
-
 // const process.env = pmx.initModule();
 
 const slackUrlRouter = {
@@ -69,6 +67,7 @@ pm2.launchBus(function (err, bus) {
 
   // Listen for process logs
   if (process.env.log) {
+
     bus.on('log:out', function (data) {
       // if (data.process.name === 'pm2-slack-plus') { return; } // Ignore messages of own module.
       const parsedLog = parseIncommingLog(data.data);
@@ -128,8 +127,10 @@ pm2.launchBus(function (err, bus) {
 
   // Listen for PM2 events
   bus.on('process:event', function (data) {
-    if (!process.env[data.event] && data.event !== 'restart overlimit') { return; } // This event type is disabled by configuration.
-    if (data.process.name === 'pm2-slack-plus') { return; } // Ignore messages of own module.
+
+
+    if (process.env[data.event] === 'false' && data.event !== 'restart overlimit') { return; }
+    // if (data.process.name === 'pm2-slack-plus') { return; } // Ignore messages of own module.
 
     let description = null;
     let interactive = [];

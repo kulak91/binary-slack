@@ -6,6 +6,10 @@ const { timeSince } = require('./utils');
 const path = require('path');
 const exec = require('shelljs').exec;
 
+const confirmStopServer = require('./src/confirmation.json');
+const helpMessage = require('./src/help-message.json');
+const reloadButton = require('./src/button-reload.json');
+
 // const pmx = require('pmx');
 // const process.env = pmx.initModule();
 
@@ -23,45 +27,18 @@ const app = new App({
 
 
 app.message('hi', async ({ message, say }) => {
-
   await say(`Hey there <@${message.user}>!\nIf you want to see the list of available commands type in chat: "help"`);
 });
 
-app.message('help', async ({ message, say }) => {
-  await say(`*List of available commands:*\ntype 'list' - to see the list of PM2 processes\ntype 'emergency_stop' - to stop PM2 processes\ntype 'info_app' - to upload the lastest log file`);
+app.message('help', async ({ say }) => {
+  await say(helpMessage);
 });
 
-app.message('emergency_stop', async ({ message, say }) => {
-  await say({
-    "text": "Are you sure you want to stop ecosystem.config file?",
-    "attachments": [
-      {
-        "text": "Please confirm",
-        "fallback": "Confirm stop",
-        "callback_id": "stop_ecosystem",
-        "color": "#3AA3E3",
-        "attachment_type": "default",
-        "actions": [
-          {
-            "name": "game",
-            "text": "Thermonuclear War",
-            "style": "danger",
-            "type": "button",
-            "value": "stop_ecosystem_confirm",
-            "confirm": {
-              "title": "Are you sure?",
-              "text": "This will stop server process.",
-              "ok_text": "Yes",
-              "dismiss_text": "No"
-            }
-          }
-        ]
-      }
-    ]
-  })
+app.message('emergency_stop', async ({ say }) => {
+  await say(confirmStopServer)
 });
 
-app.message('list', async ({ message, say }) => {
+app.message('list', async ({ say }) => {
   const status = {
     online: "\u{1F7E2}",
     stopping: "\u{1F6AB}",
@@ -120,25 +97,7 @@ app.message('list', async ({ message, say }) => {
     //   answer.blocks.push()
     // }
   }
-  answer.blocks.push(
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": `Force reload *ecosystem.config* : `
-      },
-      "accessory": {
-        "type": "button",
-        "text": {
-          "type": "plain_text",
-          "text": "Reload",
-          "emoji": true
-        },
-        "style": "primary",
-        "value": `reload`,
-        "action_id": `button-reload`
-      }
-    })
+  answer.blocks.push(reloadButton);
   await say(answer)
 }
 );
@@ -146,10 +105,8 @@ app.message('list', async ({ message, say }) => {
 app.action('button-reload', async ({ body, ack, say }) => {
   await ack();
 
-  await say(`<@${body.user.id}> wants to restart ecosystem`);
-
   if (!adminUsers.find(user => user === body.user.id)) {
-    await say(`But <@${body.user.name}> has no permissions to reload.`);
+    await say(`<@${body.user.name}> has no permissions to reload.`);
     return;
   }
 
@@ -193,11 +150,10 @@ app.action({ callback_id: 'stop_ecosystem' }, async ({ body, ack, say }) => {
   const serverPath = path.resolve(response?.pm2_env?.pm_cwd);
   const child = exec(`cd ${serverPath}; pm2 stop ecosystem.config.js`, { async: true });
 
-
   await say('Process stopped.');
 })
 
-app.message('info_app', async ({ message, client, say, payload }) => {
+app.message('info_app', async ({ message, client }) => {
 
   try {
     const date = new Date();
